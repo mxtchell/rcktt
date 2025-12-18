@@ -268,13 +268,18 @@ def document_rag_explorer(parameters: SkillInput):
     import jinja2
 
     # Render max_prompt for chat response (left panel)
+    logger.info(f"DEBUG: max_prompt value: {max_prompt[:100] if max_prompt else 'None'}...")
+    logger.info(f"DEBUG: facts_str length: {len(facts_str)} chars")
     try:
         rendered_max_prompt = jinja2.Template(max_prompt).render(facts=facts_str, question=user_question)
+        logger.info(f"DEBUG: rendered_max_prompt length: {len(rendered_max_prompt)} chars")
+        logger.info(f"DEBUG: rendered_max_prompt preview: {rendered_max_prompt[:200]}...")
     except Exception as e:
         logger.error(f"Error rendering max_prompt: {e}")
         rendered_max_prompt = f"Found {len(docs) if docs else 0} relevant documents. See the Response tab for details."
 
     # Return skill output - narrative=None since Response tab already has the detailed analysis
+    logger.info(f"DEBUG: Returning SkillOutput with final_prompt length: {len(rendered_max_prompt)}")
     return SkillOutput(
         final_prompt=rendered_max_prompt,
         narrative=None,
