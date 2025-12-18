@@ -58,7 +58,7 @@ logger = logging.getLogger(__name__)
             name="max_prompt",
             parameter_type="prompt",
             description="Prompt for the chat response (left panel).",
-            default_value="Respond in 2-3 sentences MAX. Give a 1-2 sentence summary answering the user's question. Then tell them to refer to the linked documents in References for more detail. Do NOT list document names or provide a full analysis.\n\nUser question: {{question}}"
+            default_value="Respond in 2-3 sentences MAX. Give a 1-2 sentence summary answering the user's question based on the facts below. Then tell them to refer to the linked documents in References for more detail. Do NOT list document names or provide a full analysis.\n\nUser question: {{question}}\n\nFacts from documents:\n{{facts}}"
         ),
         SkillParameter(
             name="response_layout",
@@ -134,10 +134,12 @@ def document_rag_explorer(parameters: SkillInput):
             sources_html = "<p>No sources available</p>"
             title = "No Results Found"
         else:
-            # Build short facts summary for max_prompt (left panel chat response)
+            # Build facts with actual document content for max_prompt (left panel chat response)
             facts_parts = []
             for i, doc in enumerate(docs):
-                facts_parts.append(f"- Source {i+1}: {doc.file_name} (Page {doc.chunk_index})")
+                facts_parts.append(f"====== Source {i+1}: {doc.file_name} (Page {doc.chunk_index}) ======")
+                facts_parts.append(doc.text)
+                facts_parts.append("")
             facts_str = "\n".join(facts_parts)
 
             # Generate response from documents
